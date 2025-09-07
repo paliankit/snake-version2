@@ -97,6 +97,8 @@ public class GamePanel extends JPanel implements ActionListener {
             g.setFont(new Font(null, Font.PLAIN,14));
             g.drawString("Game Over" ,260,300);
             g.drawString("Score: "+ applesEaten,260,325);
+//            Button button=new Button();
+//            button.
         }
 
     }
@@ -183,6 +185,15 @@ public class GamePanel extends JPanel implements ActionListener {
                     if(direction!='U'){
                         direction='D';
                     }
+                    break;
+                // for reset/restart after game over
+                case KeyEvent.VK_ENTER:
+                    x=new int[WIDTH/UNIT];
+                    y=new int[HEIGHT/UNIT];
+                    applesEaten=0;
+                    bodyParts=5;
+                    running=true;
+                    repaint();
                     break;
             }
         }
