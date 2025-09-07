@@ -43,13 +43,10 @@ public class GamePanel extends JPanel implements ActionListener {
     public void newApple(){
         appleX=random.nextInt(WIDTH/UNIT)*UNIT;  // to have complete overlap of apple with snake
         appleY=random.nextInt(HEIGHT/UNIT)*UNIT;
-        System.out.println("appleX: " + appleX + "appleY: " +appleY);
     }
 
     @Override
     public void actionPerformed(ActionEvent e){
-        System.out.println("Inside with actionPerformed method");
-       // repaint();
         if(running){
            move();
            checkCollisions();
@@ -65,26 +62,21 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void draw(Graphics g){
         if(running) {
-            // draw the apple
-            // 1. set the color as red
-            // 2. draw oval
             g.setColor(Color.red);
             g.drawOval(appleX, appleY, UNIT, UNIT);
 
-            //draw the score
             g.setColor(Color.red);
             g.drawString("Score: "+ applesEaten,260,25);
 
-            //draw the snake
             g.setColor(Color.green);
             for (int i = 0; i < bodyParts; i++) {
                 g.drawRect(x[i], y[i], UNIT, UNIT);
             }
-            //g.drawRect(x[0],y[0],UNIT,UNIT);
         }else{
             g.setColor(Color.red);
             g.setFont(new Font(null, Font.PLAIN,14));
-            g.drawString("Game Over",260,300);
+            g.drawString("Game Over" ,260,300);
+            g.drawString("Score: "+ applesEaten,260,325);
         }
 
     }
@@ -114,7 +106,6 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void checkCollisions(){
 
-        //apple consumpstion logic
         if(x[0]==appleX && y[0]==appleY){
             applesEaten++;
             bodyParts++;
@@ -122,19 +113,14 @@ public class GamePanel extends JPanel implements ActionListener {
             repaint();
         }
 
-        //check collisions with walls and snake itself
-
-        if(x[0]>WIDTH){
+        if(x[0]>WIDTH || y[0]<0 || y[0]>HEIGHT || x[0]<0){
             running=false;
         }
-        if(y[0]<0){
-            running=false;
-        }
-        if(y[0]>HEIGHT){
-            running=false;
-        }
-        if(x[0]<0){
-            running=false;
+        for(int i=1;i<bodyParts;i++){
+            if(x[0]==x[i] && y[0]==y[i]){
+                running=false;
+                break;
+            }
         }
     }
 
