@@ -1,3 +1,5 @@
+package main.java;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -24,6 +26,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Timer timer;
     static final int DELAY=75;
     String level;
+    Image cherry =new ImageIcon(getClass().getResource("/greenapple.png")).getImage();
 
     public GamePanel(){
         random=new Random();
@@ -64,7 +67,8 @@ public class GamePanel extends JPanel implements ActionListener {
     public void draw(Graphics g){
         if(running) {
             g.setColor(Color.red);
-            g.drawOval(appleX, appleY, UNIT, UNIT);
+            //g.drawOval(appleX, appleY, UNIT, UNIT);
+            g.drawImage(cherry,appleX, appleY, UNIT, UNIT,null);
 
             g.setColor(Color.red);
             g.drawString("Score: "+ applesEaten,260,25);
@@ -97,8 +101,6 @@ public class GamePanel extends JPanel implements ActionListener {
             g.setFont(new Font(null, Font.PLAIN,14));
             g.drawString("Game Over" ,260,300);
             g.drawString("Score: "+ applesEaten,260,325);
-//            Button button=new Button();
-//            button.
         }
 
     }
