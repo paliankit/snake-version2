@@ -37,6 +37,7 @@ public class GamePanel extends JPanel implements ActionListener {
         newApple();
         running=true;
         timer=new Timer(DELAY,this);
+        timer.start();
     }
 
     public void newApple(){
@@ -46,6 +47,11 @@ public class GamePanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e){
+        System.out.println("Inside with actionPerformed method");
+       // repaint();
+        if(running){
+           move();
+        }
         repaint();
     }
 
@@ -63,7 +69,23 @@ public class GamePanel extends JPanel implements ActionListener {
         g.drawOval(appleX,appleY,UNIT,UNIT);
 
         //draw the snake
+        g.setColor(Color.green);
+        for(int i=0;i<bodyParts;i++){
+            g.drawRect(x[i],y[i],UNIT,UNIT);
+        }
+        //g.drawRect(x[0],y[0],UNIT,UNIT);
 
+    }
+
+    public void move(){
+        if(running){
+            for(int i=bodyParts;i>0;i--){
+                x[i]=x[i-1];
+                y[i]=y[i-1];
+            }
+            //
+            x[0]=x[0]+UNIT;
+        }
     }
 
     public class MyKeyAdapter extends KeyAdapter{
