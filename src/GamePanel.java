@@ -113,9 +113,25 @@ public class GamePanel extends JPanel implements ActionListener {
             repaint();
         }
 
-        if(x[0]>WIDTH || y[0]<0 || y[0]>HEIGHT || x[0]<0){
-            running=false;
+//        if(x[0]>WIDTH || y[0]<0 || y[0]>HEIGHT || x[0]<0){
+//            running=false;
+//        }
+
+        // now collision is not possible, teleportation is
+
+        if(x[0]>WIDTH){
+            x[0]=0;
         }
+        if(x[0]<0){
+            x[0]=600;
+        }
+        if(y[0]<0){
+            y[0]=600;
+        }
+        if(y[0]>600){
+            y[0]=0;
+        }
+
         for(int i=1;i<bodyParts;i++){
             if(x[0]==x[i] && y[0]==y[i]){
                 running=false;
