@@ -23,6 +23,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Random random;
     Timer timer;
     static final int DELAY=75;
+    String level;
 
     public GamePanel(){
         random=new Random();
@@ -67,10 +68,29 @@ public class GamePanel extends JPanel implements ActionListener {
 
             g.setColor(Color.red);
             g.drawString("Score: "+ applesEaten,260,25);
+            g.drawString("Stage: "+ level,200,25);
 
             g.setColor(Color.green);
-            for (int i = 0; i < bodyParts; i++) {
-                g.drawRect(x[i], y[i], UNIT, UNIT);
+            if(applesEaten<15){
+                for (int i = 0; i < bodyParts; i++) {
+                    g.drawRect(x[i], y[i], UNIT, UNIT);
+                    level="I";
+                }
+            }else if(applesEaten<30){
+                for (int i = 0; i < bodyParts; i++) {
+                    g.fillRect(x[i], y[i], UNIT, UNIT);
+                    level="II";
+                }
+            }else if(applesEaten<60){
+                for (int i = 0; i < bodyParts; i++) {
+                    g.drawRoundRect(x[i], y[i], UNIT, UNIT,10,10);
+                    level="III";
+                }
+            }else{
+                for (int i = 0; i < bodyParts; i++) {
+                    g.fillRoundRect(x[i], y[i], UNIT, UNIT,10,10);
+                    level="IV";
+                }
             }
         }else{
             g.setColor(Color.red);
