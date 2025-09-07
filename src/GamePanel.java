@@ -16,7 +16,7 @@ public class GamePanel extends JPanel implements ActionListener {
     int[] y=new int[TOTAL_UNITS];
     int appleX;
     int appleY;
-    char direction='L';
+    char direction='R';
     boolean running=false;
     int bodyParts=5;
     int applesEaten;
@@ -41,8 +41,9 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void newApple(){
-        appleX=random.nextInt(600);
-        appleY=random.nextInt(600);
+        appleX=random.nextInt(WIDTH/UNIT)*UNIT;  // to have complete overlap of apple with snake
+        appleY=random.nextInt(HEIGHT/UNIT)*UNIT;
+        System.out.println("appleX: " + appleX + "appleY: " +appleY);
     }
 
     @Override
@@ -51,6 +52,7 @@ public class GamePanel extends JPanel implements ActionListener {
        // repaint();
         if(running){
            move();
+           checkCollisions();
         }
         repaint();
     }
@@ -62,18 +64,28 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g){
-        // draw the apple
-        // 1. set the color as red
-        // 2. draw oval
-        g.setColor(Color.red);
-        g.drawOval(appleX,appleY,UNIT,UNIT);
+        if(running) {
+            // draw the apple
+            // 1. set the color as red
+            // 2. draw oval
+            g.setColor(Color.red);
+            g.drawOval(appleX, appleY, UNIT, UNIT);
 
-        //draw the snake
-        g.setColor(Color.green);
-        for(int i=0;i<bodyParts;i++){
-            g.drawRect(x[i],y[i],UNIT,UNIT);
+            //draw the score
+            g.setColor(Color.red);
+            g.drawString("Score: "+ applesEaten,260,25);
+
+            //draw the snake
+            g.setColor(Color.green);
+            for (int i = 0; i < bodyParts; i++) {
+                g.drawRect(x[i], y[i], UNIT, UNIT);
+            }
+            //g.drawRect(x[0],y[0],UNIT,UNIT);
+        }else{
+            g.setColor(Color.red);
+            g.setFont(new Font(null, Font.PLAIN,14));
+            g.drawString("Game Over",260,300);
         }
-        //g.drawRect(x[0],y[0],UNIT,UNIT);
 
     }
 
@@ -83,8 +95,46 @@ public class GamePanel extends JPanel implements ActionListener {
                 x[i]=x[i-1];
                 y[i]=y[i-1];
             }
-            //
-            x[0]=x[0]+UNIT;
+            switch(direction){
+                case 'R':
+                    x[0]=x[0]+UNIT;
+                    break;
+                case 'L':
+                    x[0]=x[0]-UNIT;
+                    break;
+                case 'U':
+                    y[0]=y[0]-UNIT;
+                    break;
+                case 'D':
+                    y[0]=y[0]+UNIT;
+                    break;
+            }
+        }
+    }
+
+    public void checkCollisions(){
+
+        //apple consumpstion logic
+        if(x[0]==appleX && y[0]==appleY){
+            applesEaten++;
+            bodyParts++;
+            newApple();
+            repaint();
+        }
+
+        //check collisions with walls and snake itself
+
+        if(x[0]>WIDTH){
+            running=false;
+        }
+        if(y[0]<0){
+            running=false;
+        }
+        if(y[0]>HEIGHT){
+            running=false;
+        }
+        if(x[0]<0){
+            running=false;
         }
     }
 
