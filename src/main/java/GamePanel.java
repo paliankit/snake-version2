@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class GamePanel extends JPanel implements ActionListener {
@@ -32,7 +34,8 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int DELAY=75;
     String level;
     Image cherry =new ImageIcon(getClass().getResource("/cherry.png")).getImage();
-    boolean levelFlag;
+    int gameOver=0;
+    Map<String,Integer> levelCounter =new HashMap<String,Integer>();
 
     public GamePanel(){
         random=new Random();
@@ -48,6 +51,10 @@ public class GamePanel extends JPanel implements ActionListener {
         running=true;
         timer=new Timer(DELAY,this);
         timer.start();
+        levelCounter.put("I",1);
+        levelCounter.put("II",1);
+        levelCounter.put("III",1);
+        levelCounter.put("IV",1);
     }
 
     public void newApple(){
@@ -102,30 +109,32 @@ public class GamePanel extends JPanel implements ActionListener {
 
             g.setColor(Color.green);
             if(applesEaten<2){
+                level="I";
                 for (int i = 0; i < bodyParts; i++) {
                     g.drawRect(x[i], y[i], UNIT, UNIT);
-                    level="I";
                 }
             }else if(applesEaten<4){
-                levelFlag=true;
+                level="II";
                 levelUpSound();
                 for (int i = 0; i < bodyParts; i++) {
                     g.fillRect(x[i], y[i], UNIT, UNIT);
-                    level="II";
                 }
-            }else if(applesEaten<60){
+            }else if(applesEaten<6){
+                level="III";
+                levelUpSound();
                 for (int i = 0; i < bodyParts; i++) {
                     g.drawRoundRect(x[i], y[i], UNIT, UNIT,10,10);
-                    level="III";
                 }
             }else{
+                level="IV";
+                levelUpSound();
                 for (int i = 0; i < bodyParts; i++) {
                     g.fillRoundRect(x[i], y[i], UNIT, UNIT,10,10);
-                    level="IV";
                 }
             }
         }else{
             g.setColor(Color.red);
+            gameOver++;
             gameOverSound();
             g.setFont(new Font(null, Font.PLAIN,14));
             g.drawString("Game Over" ,250,300);
@@ -223,6 +232,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 case KeyEvent.VK_ENTER:
                     x=new int[WIDTH/UNIT];
                     y=new int[HEIGHT/UNIT];
+                    direction='R';
                     applesEaten=0;
                     bodyParts=5;
                     running=true;
@@ -243,26 +253,28 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void gameOverSound() throws URISyntaxException, UnsupportedAudioFileException, IOException, LineUnavailableException {
-        URL soundURL = getClass().getResource("/gameOver.wav");
-        File soundFile=new File(soundURL.toURI());
-        AudioInputStream inputStream= AudioSystem.getAudioInputStream(soundFile);
+        if(gameOver==1){ // to output the sound only once, avoid looping of sound
+            URL soundURL = getClass().getResource("/gameOver.wav");
+            File soundFile=new File(soundURL.toURI());
+            AudioInputStream inputStream= AudioSystem.getAudioInputStream(soundFile);
 
-        Clip clip=AudioSystem.getClip();
-        clip.open(inputStream);
-        clip.start();
+            Clip clip=AudioSystem.getClip();
+            clip.open(inputStream);
+            clip.start();
+        }
     }
 
     public void levelUpSound() throws URISyntaxException, UnsupportedAudioFileException, IOException, LineUnavailableException {
-        if(levelFlag){
+        if(levelCounter.get(level)==1) { // so that this sound is played only once when level is up
+            URL soundURL = getClass().getResource("/levelUp.wav");
+            File soundFile = new File(soundURL.toURI());
+            AudioInputStream inputStream = AudioSystem.getAudioInputStream(soundFile);
 
+            Clip clip = AudioSystem.getClip();
+            clip.open(inputStream);
+            clip.start();
+            levelCounter.put(level, levelCounter.get(level)+1);
         }
-        URL soundURL = getClass().getResource("/levelUp.wav");
-        File soundFile=new File(soundURL.toURI());
-        AudioInputStream inputStream= AudioSystem.getAudioInputStream(soundFile);
-
-        Clip clip=AudioSystem.getClip();
-        clip.open(inputStream);
-        clip.start();
     }
 
 }
