@@ -1,11 +1,16 @@
 package main.java;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Random;
 
 public class GamePanel extends JPanel implements ActionListener {
@@ -26,7 +31,8 @@ public class GamePanel extends JPanel implements ActionListener {
     Timer timer;
     static final int DELAY=75;
     String level;
-    Image cherry =new ImageIcon(getClass().getResource("/greenapple.png")).getImage();
+    Image cherry =new ImageIcon(getClass().getResource("/cherry.png")).getImage();
+    boolean levelFlag;
 
     public GamePanel(){
         random=new Random();
@@ -53,7 +59,17 @@ public class GamePanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e){
         if(running){
            move();
-           checkCollisions();
+            try {
+                checkCollisions();
+            } catch (UnsupportedAudioFileException ex) {
+                throw new RuntimeException(ex);
+            } catch (LineUnavailableException ex) {
+                throw new RuntimeException(ex);
+            } catch (URISyntaxException ex) {
+                throw new RuntimeException(ex);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         repaint();
     }
@@ -61,10 +77,20 @@ public class GamePanel extends JPanel implements ActionListener {
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        draw(g);
+        try {
+            draw(g);
+        } catch (UnsupportedAudioFileException e) {
+            throw new RuntimeException(e);
+        } catch (LineUnavailableException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void draw(Graphics g){
+    public void draw(Graphics g) throws UnsupportedAudioFileException, LineUnavailableException, URISyntaxException, IOException {
         if(running) {
             g.setColor(Color.red);
             //g.drawOval(appleX, appleY, UNIT, UNIT);
@@ -72,15 +98,17 @@ public class GamePanel extends JPanel implements ActionListener {
 
             g.setColor(Color.red);
             g.drawString("Score: "+ applesEaten,260,25);
-            g.drawString("Stage: "+ level,200,25);
+            g.drawString("Level: "+ level,200,25);
 
             g.setColor(Color.green);
-            if(applesEaten<15){
+            if(applesEaten<2){
                 for (int i = 0; i < bodyParts; i++) {
                     g.drawRect(x[i], y[i], UNIT, UNIT);
                     level="I";
                 }
-            }else if(applesEaten<30){
+            }else if(applesEaten<4){
+                levelFlag=true;
+                levelUpSound();
                 for (int i = 0; i < bodyParts; i++) {
                     g.fillRect(x[i], y[i], UNIT, UNIT);
                     level="II";
@@ -98,9 +126,11 @@ public class GamePanel extends JPanel implements ActionListener {
             }
         }else{
             g.setColor(Color.red);
+            gameOverSound();
             g.setFont(new Font(null, Font.PLAIN,14));
-            g.drawString("Game Over" ,260,300);
-            g.drawString("Score: "+ applesEaten,260,325);
+            g.drawString("Game Over" ,250,300);
+            g.drawString("Score: "+ applesEaten,250,325);
+            g.drawString("Please press enter key to restart",250,350);
         }
 
     }
@@ -128,13 +158,14 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    public void checkCollisions(){
+    public void checkCollisions() throws UnsupportedAudioFileException, LineUnavailableException, URISyntaxException, IOException {
 
         if(x[0]==appleX && y[0]==appleY){
             applesEaten++;
             bodyParts++;
             newApple();
             repaint();
+            appleEatenSound();
         }
 
 //        if(x[0]>WIDTH || y[0]<0 || y[0]>HEIGHT || x[0]<0){
@@ -199,6 +230,39 @@ public class GamePanel extends JPanel implements ActionListener {
                     break;
             }
         }
+    }
+
+    public void appleEatenSound() throws URISyntaxException, UnsupportedAudioFileException, IOException, LineUnavailableException {
+        URL soundURL = getClass().getResource("/appleEaten.wav");
+        File soundFile=new File(soundURL.toURI());
+        AudioInputStream inputStream= AudioSystem.getAudioInputStream(soundFile);
+
+        Clip clip=AudioSystem.getClip();
+        clip.open(inputStream);
+        clip.start();
+    }
+
+    public void gameOverSound() throws URISyntaxException, UnsupportedAudioFileException, IOException, LineUnavailableException {
+        URL soundURL = getClass().getResource("/gameOver.wav");
+        File soundFile=new File(soundURL.toURI());
+        AudioInputStream inputStream= AudioSystem.getAudioInputStream(soundFile);
+
+        Clip clip=AudioSystem.getClip();
+        clip.open(inputStream);
+        clip.start();
+    }
+
+    public void levelUpSound() throws URISyntaxException, UnsupportedAudioFileException, IOException, LineUnavailableException {
+        if(levelFlag){
+
+        }
+        URL soundURL = getClass().getResource("/levelUp.wav");
+        File soundFile=new File(soundURL.toURI());
+        AudioInputStream inputStream= AudioSystem.getAudioInputStream(soundFile);
+
+        Clip clip=AudioSystem.getClip();
+        clip.open(inputStream);
+        clip.start();
     }
 
 }
