@@ -45,6 +45,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Image snakeTailDown =new ImageIcon(getClass().getResource("/snakeTailDown.png")).getImage();
 
     Image snakeBody =new ImageIcon(getClass().getResource("/snakeBody.png")).getImage();
+    Image snakeBodyVertical =new ImageIcon(getClass().getResource("/snakeBodyVertical.png")).getImage();
 
     int gameOver=0;
     Map<String,Integer> levelCounter =new HashMap<String,Integer>();
@@ -133,34 +134,42 @@ public class GamePanel extends JPanel implements ActionListener {
             g.setColor(Color.green);
             if(applesEaten<2){
                 level="I";
-                for (int i = 0; i < bodyParts; i++) {
-                    if(i==0){
-                        g.drawImage(imageMap.get(direction).get(0),x[i], y[i], UNIT, UNIT,null);
-                    }else if(i<bodyParts-1){
-                        //g.drawRect(x[i], y[i], UNIT, UNIT);
-                        g.drawImage(snakeBody,x[i], y[i], UNIT, UNIT,null);
-                    }else{
-                        g.drawImage(imageMap.get(direction).get(1),x[i], y[i], UNIT, UNIT,null);
-                    }
-                }
+                drawSnakeCompleteBody(g);
+//                for (int i = 0; i < bodyParts; i++) {
+//                    if(i==0){
+//                        g.drawImage(imageMap.get(direction).get(0),x[i], y[i], UNIT, UNIT,null);
+//                    }else if(i<bodyParts-1){
+//                        //g.drawRect(x[i], y[i], UNIT, UNIT);
+//                        if(direction=='L' || direction=='R'){
+//                            g.drawImage(snakeBody,x[i], y[i], UNIT, UNIT,null);
+//                        }else{
+//                            g.drawImage(snakeBodyVertical,x[i], y[i], UNIT, UNIT,null);
+//                        }
+//                    }else{
+//                        g.drawImage(imageMap.get(direction).get(1),x[i], y[i], UNIT, UNIT,null);
+//                    }
+//                }
             }else if(applesEaten<4){
                 level="II";
                 levelUpSound();
-                for (int i = 0; i < bodyParts; i++) {
-                    g.fillRect(x[i], y[i], UNIT, UNIT);
-                }
+                drawSnakeCompleteBody(g);
+//                for (int i = 0; i < bodyParts; i++) {
+//                    g.fillRect(x[i], y[i], UNIT, UNIT);
+//                }
             }else if(applesEaten<6){
                 level="III";
                 levelUpSound();
-                for (int i = 0; i < bodyParts; i++) {
-                    g.drawRoundRect(x[i], y[i], UNIT, UNIT,10,10);
-                }
+                drawSnakeCompleteBody(g);
+//                for (int i = 0; i < bodyParts; i++) {
+//                    g.drawRoundRect(x[i], y[i], UNIT, UNIT,10,10);
+//                }
             }else{
                 level="IV";
                 levelUpSound();
-                for (int i = 0; i < bodyParts; i++) {
-                    g.fillRoundRect(x[i], y[i], UNIT, UNIT,10,10);
-                }
+                drawSnakeCompleteBody(g);
+//                for (int i = 0; i < bodyParts; i++) {
+//                    g.fillRoundRect(x[i], y[i], UNIT, UNIT,10,10);
+//                }
             }
         }else{
             g.setColor(Color.red);
@@ -311,7 +320,24 @@ public class GamePanel extends JPanel implements ActionListener {
     public void loadGameScreen(Graphics g) throws InterruptedException {
         g.setColor(Color.WHITE);
         g.drawString("SNAKE",200,200);
-        Thread.sleep(5000);
+        //Thread.sleep(5000);
+    }
+
+    public void drawSnakeCompleteBody(Graphics g){
+        for (int i = 0; i < bodyParts; i++) {
+            if(i==0){
+                g.drawImage(imageMap.get(direction).get(0),x[i], y[i], UNIT, UNIT,null);
+            }else if(i<bodyParts-1){
+                //g.drawRect(x[i], y[i], UNIT, UNIT);
+                if(direction=='L' || direction=='R'){
+                    g.drawImage(snakeBody,x[i], y[i], UNIT, UNIT,null);
+                }else{
+                    g.drawImage(snakeBodyVertical,x[i], y[i], UNIT, UNIT,null);
+                }
+            }else{
+                g.drawImage(imageMap.get(direction).get(1),x[i], y[i], UNIT, UNIT,null);
+            }
+        }
     }
 
 }
