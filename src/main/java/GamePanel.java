@@ -34,8 +34,15 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int DELAY=75;
     String level;
     Image apple =new ImageIcon(getClass().getResource("/apple4.png")).getImage();
+    Image snakeHeadRight =new ImageIcon(getClass().getResource("/snakeHeadRight.png")).getImage();
+    Image snakeHeadLeft =new ImageIcon(getClass().getResource("/snakeHeadLeft.png")).getImage();
+    Image snakeHeadUp =new ImageIcon(getClass().getResource("/snakeHeadUp.png")).getImage();
+    Image snakeHeadDown =new ImageIcon(getClass().getResource("/snakeHeadDown.png")).getImage();
+
     int gameOver=0;
     Map<String,Integer> levelCounter =new HashMap<String,Integer>();
+    int loadScreenCounter=0;
+    Map<Character,Image> imageMap=new HashMap<Character,Image>();
 
     public GamePanel(){
         random=new Random();
@@ -48,13 +55,17 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void startGame(){
         newApple();
-        running=true;
+        //running=true;
         timer=new Timer(DELAY,this);
         timer.start();
         levelCounter.put("I",1);
         levelCounter.put("II",1);
         levelCounter.put("III",1);
         levelCounter.put("IV",1);
+        imageMap.put('L',snakeHeadLeft);
+        imageMap.put('R',snakeHeadRight);
+        imageMap.put('U',snakeHeadUp);
+        imageMap.put('D',snakeHeadDown);
     }
 
     public void newApple(){
@@ -92,13 +103,17 @@ public class GamePanel extends JPanel implements ActionListener {
             throw new RuntimeException(e);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void draw(Graphics g) throws UnsupportedAudioFileException, LineUnavailableException, URISyntaxException, IOException {
-        loadGameScreen(g);
+    public void draw(Graphics g) throws UnsupportedAudioFileException, LineUnavailableException, URISyntaxException, IOException, InterruptedException {
+        if(!running && ++loadScreenCounter==1){
+            loadGameScreen(g);
+            running=true;
+            Thread.sleep(5000);
+        }
         if(running) {
             g.setColor(Color.red);
             //g.drawOval(appleX, appleY, UNIT, UNIT);
@@ -112,7 +127,11 @@ public class GamePanel extends JPanel implements ActionListener {
             if(applesEaten<2){
                 level="I";
                 for (int i = 0; i < bodyParts; i++) {
-                    g.drawRect(x[i], y[i], UNIT, UNIT);
+                    if(i==0){
+                        g.drawImage(imageMap.get(direction),x[i], y[i], UNIT, UNIT,null);
+                    }else{
+                        g.drawRect(x[i], y[i], UNIT, UNIT);
+                    }
                 }
             }else if(applesEaten<4){
                 level="II";
@@ -140,7 +159,7 @@ public class GamePanel extends JPanel implements ActionListener {
             g.setFont(new Font(null, Font.PLAIN,14));
             g.drawString("Game Over" ,250,300);
             g.drawString("Score: "+ applesEaten,250,325);
-            g.drawString("Please press enter key to restart",250,350);
+            g.drawString("Please press shift key to restart",250,350);
         }
 
     }
@@ -230,7 +249,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     }
                     break;
                 // for reset/restart after game over
-                case KeyEvent.VK_ENTER:
+                case KeyEvent.VK_SHIFT:
                     x=new int[WIDTH/UNIT];
                     y=new int[HEIGHT/UNIT];
                     direction='R';
@@ -279,8 +298,10 @@ public class GamePanel extends JPanel implements ActionListener {
 
     }
 
-    public void loadGameScreen(Graphics g){
+    public void loadGameScreen(Graphics g) throws InterruptedException {
+        g.setColor(Color.WHITE);
         g.drawString("SNAKE",200,200);
+        Thread.sleep(5000);
     }
 
 }
