@@ -2,7 +2,9 @@ package main.java;
 
 import javax.sound.sampled.*;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
+import java.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -11,9 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.List;
 
 public class GamePanel extends JPanel implements ActionListener {
 
@@ -39,10 +39,17 @@ public class GamePanel extends JPanel implements ActionListener {
     Image snakeHeadUp =new ImageIcon(getClass().getResource("/snakeHeadUp.png")).getImage();
     Image snakeHeadDown =new ImageIcon(getClass().getResource("/snakeHeadDown.png")).getImage();
 
+    Image snakeTailRight =new ImageIcon(getClass().getResource("/snakeTailRight.png")).getImage();
+    Image snakeTailLeft =new ImageIcon(getClass().getResource("/snakeTailLeft.png")).getImage();
+    Image snakeTailUp =new ImageIcon(getClass().getResource("/snakeTailUp.png")).getImage();
+    Image snakeTailDown =new ImageIcon(getClass().getResource("/snakeTailDown.png")).getImage();
+
+    Image snakeBody =new ImageIcon(getClass().getResource("/snakeBody.png")).getImage();
+
     int gameOver=0;
     Map<String,Integer> levelCounter =new HashMap<String,Integer>();
     int loadScreenCounter=0;
-    Map<Character,Image> imageMap=new HashMap<Character,Image>();
+    Map<Character,List<Image>> imageMap=new HashMap<Character,List<Image>>();
 
     public GamePanel(){
         random=new Random();
@@ -62,10 +69,10 @@ public class GamePanel extends JPanel implements ActionListener {
         levelCounter.put("II",1);
         levelCounter.put("III",1);
         levelCounter.put("IV",1);
-        imageMap.put('L',snakeHeadLeft);
-        imageMap.put('R',snakeHeadRight);
-        imageMap.put('U',snakeHeadUp);
-        imageMap.put('D',snakeHeadDown);
+        imageMap.put('L', Arrays.asList(snakeHeadLeft,snakeTailLeft));
+        imageMap.put('R',Arrays.asList(snakeHeadRight,snakeTailRight));
+        imageMap.put('U',Arrays.asList(snakeHeadUp,snakeTailUp));
+        imageMap.put('D',Arrays.asList(snakeHeadDown,snakeTailDown));
     }
 
     public void newApple(){
@@ -128,9 +135,12 @@ public class GamePanel extends JPanel implements ActionListener {
                 level="I";
                 for (int i = 0; i < bodyParts; i++) {
                     if(i==0){
-                        g.drawImage(imageMap.get(direction),x[i], y[i], UNIT, UNIT,null);
+                        g.drawImage(imageMap.get(direction).get(0),x[i], y[i], UNIT, UNIT,null);
+                    }else if(i<bodyParts-1){
+                        //g.drawRect(x[i], y[i], UNIT, UNIT);
+                        g.drawImage(snakeBody,x[i], y[i], UNIT, UNIT,null);
                     }else{
-                        g.drawRect(x[i], y[i], UNIT, UNIT);
+                        g.drawImage(imageMap.get(direction).get(1),x[i], y[i], UNIT, UNIT,null);
                     }
                 }
             }else if(applesEaten<4){
