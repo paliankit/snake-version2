@@ -33,7 +33,7 @@ public class GamePanel extends JPanel implements ActionListener {
     Timer timer;
     static final int DELAY=75;
     String level;
-    Image cherry =new ImageIcon(getClass().getResource("/cherry.png")).getImage();
+    Image apple =new ImageIcon(getClass().getResource("/apple4.png")).getImage();
     int gameOver=0;
     Map<String,Integer> levelCounter =new HashMap<String,Integer>();
 
@@ -98,10 +98,11 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g) throws UnsupportedAudioFileException, LineUnavailableException, URISyntaxException, IOException {
+        loadGameScreen(g);
         if(running) {
             g.setColor(Color.red);
             //g.drawOval(appleX, appleY, UNIT, UNIT);
-            g.drawImage(cherry,appleX, appleY, UNIT, UNIT,null);
+            g.drawImage(apple,appleX, appleY, UNIT, UNIT,null);
 
             g.setColor(Color.red);
             g.drawString("Score: "+ applesEaten,260,25);
@@ -275,6 +276,11 @@ public class GamePanel extends JPanel implements ActionListener {
             clip.start();
             levelCounter.put(level, levelCounter.get(level)+1);
         }
+
+    }
+
+    public void loadGameScreen(Graphics g){
+        g.drawString("SNAKE",200,200);
     }
 
 }
